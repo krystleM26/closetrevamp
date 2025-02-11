@@ -5,7 +5,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL, 
 });
 
-// Optionally, test the connection
+// Product DB
 pool.connect()
   .then(client => {
     console.log('Connected to the database');
@@ -18,42 +18,59 @@ pool.connect()
 
   async function getProducts() {  // <--- Example function to get products
     try {
-        const query = {
-            text: 'SELECT * FROM public.products', // Or public.products if needed
-            // ... any other query parameters (e.g., values for placeholders)
-        };
+        // const query = {
+        //     text: 'SELECT * FROM public.products', // Or public.products if needed
+        //     // ... any other query parameters (e.g., values for placeholders)
+        // };
 
-        console.log("Executing query:", query.text); // <--- Debugging line
+        // console.log("Executing query:", query.text); // <--- Debugging line
 
         const res = await pool.query('SELECT * FROM public.products');
-
-        console.log("Products fetched:", res.rows); // Log the results
-
         return res.rows; // Return the products
 
     } catch (error) {
-        console.error("Error fetching products:", error); // Keep this error logging
-        if (error.hasOwnProperty('routine')) { // Check if the error has a routine property
-            console.error("Postgres Error Routine:", error.routine); // Log the routine
-        }
-        throw error; // Re-throw the error to be handled by the caller
+       console.error('Error fetching products', error);
+       throw error;
     }
 }
 
 
-// Example of how to use the getProducts function:
-async function doSomething() {
-    try {
-        const products = await getProducts();
-        console.log("Products in doSomething:", products);
-        // ... do something with the products ...
-    } catch (error) {
-        console.error("Error in doSomething:", error); // Handle the error
-    }
+// User DB
+async function findUserByAuth0Id(auth0Id) {
+  try {
+    const res = await pool.query('SELECT * FROM users WHERE auth0_id = $1', [auth0Id]);
+    return res.rows[0]; // Returns undefined if no user is found
+  } catch (error) {
+    console.error("Error finding user by Auth0 ID:", error);
+    throw error;
+  }
 }
 
-doSomething(); // Call the function to actually fetch the products.
+async function createUser(user) {
+  try {
+    const res = await pool.query(
+      'INSERT INTO users (auth0_id, email, name) VALUES ($1, $2, $3) RETURNING *',
+      [user.auth0Id, user.email, user.name]
+    );
+    return res.rows[0];
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw error;
+  }
+}
+
+async function findUserById(id) {
+  try {
+    const res = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    return res.rows[0];
+  } catch (error) {
+    console.error("Error finding user by ID:", error);
+    throw error;
+  }
+}
+
+module.exports = { pool, getProducts, findUserByAuth0Id, createUser, findUserById };
 
 
 
-module.exports = { pool, getProducts };
+

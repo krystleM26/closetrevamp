@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auth Test</title>
+</head>
+<body>
+  <a href="/auth/login">Login with Auth0</a>
+
+  <script>
+    console.log("Cookies:", document.cookie);
+    if (document.cookie.includes('connect.sid')) {
+        window.location.href = '/dashboard';
+    }
+  </script>
+</body>
+</html>
