@@ -3,6 +3,13 @@ const passport = require('passport');
 const Auth0Strategy = require('passport-auth0');
 const db = require('./db'); 
 
+console.log("Auth0 Domain:", process.env.AUTH0_DOMAIN);
+console.log("Auth0 Client ID:", process.env.AUTH0_CLIENT_ID);
+console.log("Auth0 Client Secret:", process.env.AUTH0_CLIENT_SECRET);
+console.log("Auth0 Callback URL:", process.env.AUTH0_CALLBACK_URL);
+console.log("Session Secret (part):", process.env.SESSION_SECRET.substring(0, 10)); // Log a part of the session secret
+
+
 const strategy = new Auth0Strategy(
   {
     domain: process.env.AUTH0_DOMAIN,

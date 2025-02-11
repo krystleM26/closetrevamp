@@ -2,7 +2,7 @@ require('dotenv').config();  // This loads environment variables
 const express = require('express');
 const path = require('path')
 const session = require('express-session')
-const passport = require('./oauthServer');
+const passport = require('./oauthServer.js');
 const authRoutes = require('./routes/authRoutes')
 const pool = require('./db');
 const cors = require('cors');
